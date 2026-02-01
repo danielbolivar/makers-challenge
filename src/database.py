@@ -14,8 +14,8 @@ from src.settings import settings
 
 from pgvector.sqlalchemy import Vector
 
-# Embedding dimension for gemini-embedding-001 / text-embedding-004
-VECTOR_DIM = 3072
+# Embedding dimension; must be <= 2000 for pgvector HNSW index (text-embedding-004 with output_dimensionality=768)
+VECTOR_DIM = 768
 
 
 class Base(DeclarativeBase):

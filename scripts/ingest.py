@@ -15,8 +15,9 @@ if str(_root) not in sys.path:
 
 import fitz  # pymupdf
 from google import genai
+from google.genai import types
 
-from src.database import Chunk, Document, async_session_factory, init_db
+from src.database import Chunk, Document, VECTOR_DIM, async_session_factory, init_db
 from src.settings import settings
 
 DEFAULT_PDF_PATH = _root / "data" / "Coding case_v26.pdf"
@@ -44,6 +45,7 @@ def embed_batch(client: genai.Client, texts: list[str]) -> list[list[float]]:
     result = client.models.embed_content(
         model=settings.EMBEDDING_MODEL,
         contents=texts,
+        config=types.EmbedContentConfig(output_dimensionality=VECTOR_DIM),
     )
     if not result.embeddings:
         raise ValueError("Empty embeddings from API")

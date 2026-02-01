@@ -6,7 +6,7 @@ We need to index a PDF (company knowledge) and retrieve relevant chunks for the 
 
 ## Decision
 
-- **Embedding model:** `gemini-embedding-001` or `text-embedding-004` (configurable via `EMBEDDING_MODEL`). Default 3072 dimensions; same model for ingest and query.
+- **Embedding model:** `gemini-embedding-001` or `text-embedding-004` (configurable via `EMBEDDING_MODEL`). Output 768 dimensions (via `output_dimensionality`) to stay within pgvector HNSW index limit of 2000; same model for ingest and query.
 - **Chunking:** Page-based in ingest script (`scripts/ingest.py`); each page becomes one chunk with metadata `page N`.
 - **Similarity:** L2 distance in pgvector (`<=>`); HNSW index for approximate nearest neighbor.
 - **Top-k:** Configurable `RAG_TOP_K` (default 5).

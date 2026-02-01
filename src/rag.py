@@ -4,10 +4,11 @@ If top chunk distance is above threshold, prepend "No relevant passage found" an
 """
 
 from google import genai
+from google.genai import types
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import Chunk
+from src.database import Chunk, VECTOR_DIM
 from src.settings import settings
 
 # L2 distance for pgvector (<=> operator)
@@ -24,6 +25,7 @@ def embed_text(text: str) -> list[float]:
     result = client.models.embed_content(
         model=settings.EMBEDDING_MODEL,
         contents=text,
+        config=types.EmbedContentConfig(output_dimensionality=VECTOR_DIM),
     )
     if not result.embeddings:
         raise ValueError("Empty embeddings from API")
