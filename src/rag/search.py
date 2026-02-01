@@ -8,8 +8,8 @@ from google.genai import types
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import Chunk, VECTOR_DIM
-from src.settings import settings
+from src.config import settings
+from src.db import Chunk, VECTOR_DIM
 
 # L2 distance for pgvector (<=> operator)
 GUARDED_MESSAGE = "No relevant passage found in the knowledge base."
@@ -54,8 +54,6 @@ async def search(
 
     query_embedding = await embed_text_async(query)
 
-    # pgvector L2 distance: order by embedding <=> query_embedding, limit top_k
-    # Chunk.embedding.l2_distance(query_embedding) for SQLAlchemy 2.0
     stmt = (
         select(Chunk.content, Chunk.metadata_json, Chunk.embedding.l2_distance(query_embedding).label("distance"))
         .order_by(Chunk.embedding.l2_distance(query_embedding))
@@ -71,7 +69,6 @@ async def search(
     if top_distance > similarity_threshold:
         return GUARDED_MESSAGE
 
-    # Only include chunks that are actually relevant (distance <= threshold)
     parts = []
     for row in rows:
         dist = float(row.distance) if row.distance is not None else float("inf")

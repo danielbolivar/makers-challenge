@@ -6,7 +6,7 @@ CRM-style: keep only biographical / business intent / preferences; discard ephem
 from google import genai
 from google.genai import types
 
-from src.settings import settings
+from src.config import settings
 
 SYSTEM_PROMPT = """Act as an expert CRM Data Analyst. Your job is to update a client profile based on their latest conversation.
 
@@ -20,8 +20,6 @@ Filtering rules:
 
 Output: A single plain-text paragraph with the updated profile. If the conversation added no profile value (only ephemeral tech support), return the Previous Profile unchanged."""
 
-# Plan: gemini-3-flash-preview; fallback to widely available model
-SUMMARY_MODEL = "gemini-2.0-flash"
 SUMMARY_MODEL_FALLBACK = "gemini-1.5-flash"
 
 

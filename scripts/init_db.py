@@ -12,7 +12,7 @@ _root = Path(__file__).resolve().parent.parent
 if str(_root) not in sys.path:
     sys.path.insert(0, str(_root))
 
-from src.database import init_db
+from src.db import init_db
 
 
 async def main() -> None:

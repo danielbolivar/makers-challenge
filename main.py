@@ -7,14 +7,14 @@ import asyncio
 import os
 import sys
 
-from src.settings import settings
+from src.config import settings
 
 # So pydantic_ai (GoogleProvider) and other libs that read from os.environ see .env values
 if settings.GOOGLE_API_KEY:
     os.environ["GOOGLE_API_KEY"] = settings.GOOGLE_API_KEY
 
-from src.database import init_db
-from src.telegram_bot import run_bot
+from src.db import init_db
+from src.adapters import run_bot
 
 
 def _init_logfire() -> None:

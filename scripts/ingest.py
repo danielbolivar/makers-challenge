@@ -17,8 +17,8 @@ import fitz  # pymupdf
 from google import genai
 from google.genai import types
 
-from src.database import Chunk, Document, VECTOR_DIM, async_session_factory, init_db
-from src.settings import settings
+from src.config import settings
+from src.db import Chunk, Document, VECTOR_DIM, async_session_factory, init_db
 
 DEFAULT_PDF_PATH = _root / "data" / "Coding case_v26.pdf"
 BATCH_SIZE = 10

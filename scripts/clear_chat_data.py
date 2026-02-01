@@ -14,7 +14,7 @@ if str(_root) not in sys.path:
 
 from sqlalchemy import delete
 
-from src.database import ChatMessage, User, async_session_factory, init_db
+from src.db import ChatMessage, User, async_session_factory, init_db
 
 
 async def main() -> None:

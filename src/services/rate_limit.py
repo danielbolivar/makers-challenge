@@ -7,7 +7,7 @@ import time
 from collections import defaultdict
 from threading import Lock
 
-from src.settings import settings
+from src.config import settings
 
 
 def _key(user_id: str, channel_id: str | None) -> str:
@@ -59,7 +59,6 @@ class RateLimiter:
             return len(self._timestamps[key]) < self.max_requests
 
 
-# Singleton for app use
 _rate_limiter: RateLimiter | None = None
 
 

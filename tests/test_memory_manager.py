@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.memory_manager import _format_messages, summarize_conversation
+from src.memory import _format_messages, summarize_conversation
 
 
 def test_summarize_empty_messages_returns_current_summary():
@@ -32,7 +32,7 @@ def test_summarize_conversation_case_a_tech_support_unchanged():
     mock_response = MagicMock()
     mock_response.text = current_summary
 
-    with patch("src.memory_manager.genai.Client") as MockClient:
+    with patch("src.memory.memory_manager.genai.Client") as MockClient:
         mock_models = MagicMock()
         mock_models.generate_content.return_value = mock_response
         MockClient.return_value.models = mock_models
@@ -59,7 +59,7 @@ def test_summarize_conversation_case_b_profile_updated():
     mock_response = MagicMock()
     mock_response.text = expected_profile
 
-    with patch("src.memory_manager.genai.Client") as MockClient:
+    with patch("src.memory.memory_manager.genai.Client") as MockClient:
         mock_models = MagicMock()
         mock_models.generate_content.return_value = mock_response
         MockClient.return_value.models = mock_models

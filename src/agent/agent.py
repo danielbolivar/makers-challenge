@@ -13,9 +13,9 @@ from pydantic_ai.messages import ModelRequest, ModelResponse, TextPart, UserProm
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database import ChatMessage, User
+from src.config import settings
+from src.db import ChatMessage, User
 from src.rag import search as rag_search
-from src.settings import settings
 
 
 @dataclass
@@ -29,7 +29,6 @@ class AgentDeps:
     profile_summary: str
 
 
-# Model: plan said gemini-3-flash-preview; pydantic-ai uses google-gla: model name
 MODEL_NAME = "google-gla:gemini-flash-latest"
 
 SYSTEM_PROMPT = """You are a customer service agent for Camaral. Answer only from the provided knowledge base search results. Be concise and helpful.
@@ -40,24 +39,16 @@ There is some memory of the conversation in the chat history. Use it to answer t
 """
 
 
-
-
 def _strip_markdown(text: str) -> str:
     """Remove common markdown so Telegram shows plain text."""
     if not text:
         return text
-    # Remove ``` code blocks (keep inner content)
     text = re.sub(r"```[\w]*\n?(.*?)```", r"\1", text, flags=re.DOTALL)
-    # Remove **bold** and __bold__
     text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
     text = re.sub(r"__(.+?)__", r"\1", text)
-    # Remove # ## ### from start of lines
     text = re.sub(r"^#+\s*", "", text, flags=re.MULTILINE)
-    # Remove - or * at start of line (bullets)
     text = re.sub(r"^[\*\-]\s+", "", text, flags=re.MULTILINE)
-    # Remove inline `code`
     text = re.sub(r"`([^`]+)`", r"\1", text)
-    # Remove [text](url) links, keep text
     text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
     return text.strip()
 
@@ -113,7 +104,7 @@ async def _load_message_history(
         .limit(limit)
     )
     result = await session.execute(stmt)
-    rows = list(result.all())[::-1]  # oldest first
+    rows = list(result.all())[::-1]
     messages = []
     for role, content, created_at in rows:
         ts = created_at or datetime.utcnow()

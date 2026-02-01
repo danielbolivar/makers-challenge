@@ -12,10 +12,10 @@ from telegram import Update
 from telegram.ext import Application, ContextTypes, MessageHandler, filters
 
 from src.agent import get_agent_response
-from src.database import ChatMessage, User, async_session_factory
-from src.memory_manager import summarize_conversation
-from src.rate_limit import get_rate_limiter
-from src.settings import settings
+from src.config import settings
+from src.db import ChatMessage, User, async_session_factory
+from src.memory import summarize_conversation
+from src.services import get_rate_limiter
 
 CHANNEL_ID = "telegram"
 
@@ -93,7 +93,6 @@ async def _maybe_summarize_and_new_conversation(
     if elapsed <= timeout_seconds:
         return conv_id
 
-    # Previous conversation timed out: summarize and start new
     user = await _get_or_create_user(session, user_id, channel_id)
     messages = await _load_conversation_messages(session, user_id, channel_id, conv_id)
     if messages:

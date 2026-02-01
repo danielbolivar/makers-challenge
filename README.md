@@ -2,6 +2,19 @@
 
 RAG chatbot for customer service. Answers from a knowledge base (PDF) via Telegram. Built with Python, PostgreSQL (pgvector), Gemini, and pydantic-ai.
 
+## Project layout
+
+```
+src/
+  config/     # Settings (env, .env)
+  db/         # PostgreSQL models, engine, session, init_db
+  rag/        # Embeddings and similarity search
+  agent/      # PydanticAI agent (RAG tool, history, profile)
+  memory/     # Long-term memory (summarize conversation → profile_summary)
+  services/   # Shared services (rate limiting)
+  adapters/   # Channel adapters (Telegram)
+```
+
 ## Requirements
 
 - Python 3.11+
