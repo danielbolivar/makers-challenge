@@ -71,12 +71,18 @@ async def search(
     if top_distance > similarity_threshold:
         return GUARDED_MESSAGE
 
+    # Only include chunks that are actually relevant (distance <= threshold)
     parts = []
     for row in rows:
+        dist = float(row.distance) if row.distance is not None else float("inf")
+        if dist > similarity_threshold:
+            continue
         content = row.content or ""
         meta = row.metadata_json or ""
         if meta:
             parts.append(f"[{meta}]\n{content}")
         else:
             parts.append(content)
+    if not parts:
+        return GUARDED_MESSAGE
     return "\n\n---\n\n".join(parts)

@@ -3,6 +3,7 @@ PydanticAI agent: RAG tool, short-term history, long-term profile injection.
 Logfire instrumentation when LOGFIRE_TOKEN is set.
 """
 
+import re
 from datetime import datetime
 from dataclasses import dataclass
 from uuid import UUID
@@ -29,9 +30,38 @@ class AgentDeps:
 
 
 # Model: plan said gemini-3-flash-preview; pydantic-ai uses google-gla: model name
-MODEL_NAME = "google-gla:gemini-3-flash-preview"
+MODEL_NAME = "google-gla:gemini-flash-latest"
 
-SYSTEM_PROMPT = """You are a customer service agent for Camaral. Answer only from the provided knowledge base search results. Be concise and helpful. Answer in plain text."""
+SYSTEM_PROMPT = """You are a customer service agent for Camaral. Answer only from the provided knowledge base search results. Be concise and helpful.
+
+CRITICAL: Reply in plain text only. Do NOT use any markdown: no **bold**, no # headers, no - or * bullet lists, no `code`, no ``` blocks, no links in [text](url) format. Write like a simple SMS or chat message.
+
+There is some memory of the conversation in the chat history. Use it to answer the question.
+
+Always greet the user like a human would. Ask his name and how you can help him.
+"""
+
+
+
+
+def _strip_markdown(text: str) -> str:
+    """Remove common markdown so Telegram shows plain text."""
+    if not text:
+        return text
+    # Remove ``` code blocks (keep inner content)
+    text = re.sub(r"```[\w]*\n?(.*?)```", r"\1", text, flags=re.DOTALL)
+    # Remove **bold** and __bold__
+    text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
+    text = re.sub(r"__(.+?)__", r"\1", text)
+    # Remove # ## ### from start of lines
+    text = re.sub(r"^#+\s*", "", text, flags=re.MULTILINE)
+    # Remove - or * at start of line (bullets)
+    text = re.sub(r"^[\*\-]\s+", "", text, flags=re.MULTILINE)
+    # Remove inline `code`
+    text = re.sub(r"`([^`]+)`", r"\1", text)
+    # Remove [text](url) links, keep text
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    return text.strip()
 
 
 def create_agent():
@@ -164,7 +194,7 @@ async def get_agent_response(
         message_history=history if history else None,
         instructions=instructions,
     )
-    reply = (result.output or "").strip()
+    reply = _strip_markdown((result.output or "").strip())
     await _persist_messages(
         session, user_id, channel_id, conversation_id, user_message, reply
     )
