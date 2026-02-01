@@ -3,7 +3,14 @@ Application settings via pydantic-settings.
 Loads from environment and optional .env file.
 """
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Vertex AI embedding names that are not valid for Gemini API (embedContent); map to Gemini model
+_GEMINI_EMBEDDING_MODEL = "gemini-embedding-001"
+_VERTEX_ONLY_EMBEDDING_NAMES = frozenset(
+    {"text-embedding-001", "text-embedding-004", "text-embedding-005", "text-multilingual-embedding-002"}
+)
 
 
 class Settings(BaseSettings):
@@ -31,8 +38,16 @@ class Settings(BaseSettings):
 
     # RAG
     RAG_TOP_K: int = 5
-    EMBEDDING_MODEL: str = "text-embedding-004"
+    EMBEDDING_MODEL: str = _GEMINI_EMBEDDING_MODEL  # Gemini API; use 768 dims via output_dimensionality
     RAG_SIMILARITY_THRESHOLD: float = 1.0  # max L2 distance for top chunk; above = guarded
+
+    @field_validator("EMBEDDING_MODEL", mode="after")
+    @classmethod
+    def normalize_embedding_model(cls, v: str) -> str:
+        """Use Gemini embedding model when Vertex-only name is set (e.g. by env var)."""
+        if v.strip().lower() in _VERTEX_ONLY_EMBEDDING_NAMES:
+            return _GEMINI_EMBEDDING_MODEL
+        return v
 
     # Chat & memory
     CHAT_HISTORY_LIMIT: int = 20

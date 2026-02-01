@@ -29,7 +29,7 @@ class AgentDeps:
 
 
 # Model: plan said gemini-3-flash-preview; pydantic-ai uses google-gla: model name
-MODEL_NAME = "google-gla:gemini-2.0-flash"
+MODEL_NAME = "google-gla:gemini-3-flash-preview"
 
 SYSTEM_PROMPT = """You are a customer service agent for Camaral. Answer only from the provided knowledge base search results. If the answer is not there, say so and offer to escalate. Be concise and helpful."""
 
