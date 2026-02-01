@@ -37,8 +37,6 @@ SYSTEM_PROMPT = """You are a customer service agent for Camaral. Answer only fro
 CRITICAL: Reply in plain text only. Do NOT use any markdown: no **bold**, no # headers, no - or * bullet lists, no `code`, no ``` blocks, no links in [text](url) format. Write like a simple SMS or chat message.
 
 There is some memory of the conversation in the chat history. Use it to answer the question.
-
-Always greet the user like a human would. Ask his name and how you can help him.
 """
 
 
@@ -76,7 +74,7 @@ def create_agent():
 
     @agent.tool
     async def search_knowledge_base(ctx: RunContext[AgentDeps], query: str) -> str:
-        """Search the company knowledge base for information relevant to the user query. Use this before answering questions about Camaral."""
+        """Search the company knowledge base. Use the user question as query. The knowledge base is in Spanish: for questions about founder/CEO use also Spanish terms (e.g. fundador, Samuel Santa, CEO, liderazgo) so the right passage is found. Call this before answering."""
         return await rag_search(ctx.deps.session, query=query)
 
     return agent

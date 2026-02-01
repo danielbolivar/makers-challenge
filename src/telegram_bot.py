@@ -122,6 +122,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     async with async_session_factory() as session:
         try:
+            await _get_or_create_user(session, user_id, CHANNEL_ID)
             conversation_id: UUID = await _maybe_summarize_and_new_conversation(
                 session, user_id, CHANNEL_ID
             )

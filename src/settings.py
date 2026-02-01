@@ -37,9 +37,9 @@ class Settings(BaseSettings):
     LOGFIRE_BASE_URL: str | None = None
 
     # RAG
-    RAG_TOP_K: int = 3  # fewer chunks = less noise; only chunks with distance <= threshold are used
+    RAG_TOP_K: int = 3  # few chunks to avoid all pages; agent should search with Spanish terms (fundador, etc.) for founder/CEO
     EMBEDDING_MODEL: str = _GEMINI_EMBEDDING_MODEL  # Gemini API; use 768 dims via output_dimensionality
-    RAG_SIMILARITY_THRESHOLD: float = 0.85  # max L2 distance per chunk; above = excluded from context
+    RAG_SIMILARITY_THRESHOLD: float = 1.0  # max L2 distance per chunk; relaxed so Spanish doc matches English questions
 
     @field_validator("EMBEDDING_MODEL", mode="after")
     @classmethod
