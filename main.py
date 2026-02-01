@@ -4,6 +4,7 @@ Loads settings, initializes Logfire (if configured), DB, and Telegram bot.
 """
 
 import asyncio
+import os
 import sys
 
 from src.database import init_db
@@ -12,11 +13,13 @@ from src.telegram_bot import run_bot
 
 
 def _init_logfire() -> None:
-    """Initialize Logfire if LOGFIRE_TOKEN is set."""
+    """Initialize Logfire if LOGFIRE_TOKEN is set. Use LOGFIRE_BASE_URL for local/self-hosted backend."""
     if not settings.LOGFIRE_TOKEN:
         return
     try:
         import logfire
+        if settings.LOGFIRE_BASE_URL:
+            os.environ["LOGFIRE_BASE_URL"] = settings.LOGFIRE_BASE_URL.rstrip("/")
         logfire.configure(token=settings.LOGFIRE_TOKEN)
     except Exception as e:
         print(f"Logfire init skipped: {e}", file=sys.stderr)

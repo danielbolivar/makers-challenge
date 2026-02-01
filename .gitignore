@@ -5,6 +5,8 @@
 venv/
 env/
 
+final_review_gate.py
+
 # Python
 __pycache__/
 *.py[cod]
@@ -52,7 +54,7 @@ logs/
 # Local data (optional: uncomment if you don't want to track PDFs)
 # data/*.pdf
 
-# Logfire / observability
+# Logfire local cache (SDK state; observability can still be "local" via LOGFIRE_BASE_URL)
 .logfire/
 
 # Docker

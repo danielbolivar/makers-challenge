@@ -26,6 +26,8 @@ class Settings(BaseSettings):
 
     # Logfire (optional; if set, observability is enabled)
     LOGFIRE_TOKEN: str | None = None
+    # Self-hosted / local Logfire backend (e.g. http://localhost:8000). If set, token is sent to this URL.
+    LOGFIRE_BASE_URL: str | None = None
 
     # RAG
     RAG_TOP_K: int = 5
